@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard - Vexa Cell</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: { 500: '#0ea5e9', 600: '#0284c7', 900: '#0c4a6e' },
+            navy: { 600: '#475569', 800: '#1e293b', 900: '#0f172a' }
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body class="bg-gray-50 text-navy-900 font-sans">
+
+  <!-- Sidebar -->
+  <aside class="fixed left-0 top-0 h-full w-64 bg-navy-900 text-white z-40 hidden lg:block">
+    <div class="p-6">
+      <div class="flex items-center space-x-2 mb-8">
+        <div class="w-9 h-9 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center">
+          <i data-lucide="shield-check" class="w-5 h-5 text-white"></i>
+        </div>
+        <span class="text-lg font-bold">Vexa Admin</span>
+      </div>
+
+      <nav class="space-y-1">
+        <a href="/admin/dashboard.html" class="flex items-center space-x-3 px-4 py-3 bg-primary-600 rounded-xl font-medium">
+          <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="/admin/users.html" class="flex items-center space-x-3 px-4 py-3 text-navy-200 hover:bg-navy-800 rounded-xl font-medium transition-colors">
+          <i data-lucide="users" class="w-5 h-5"></i>
+          <span>Manajemen User</span>
+        </a>
+        <a href="/admin/transactions.html" class="flex items-center space-x-3 px-4 py-3 text-navy-200 hover:bg-navy-800 rounded-xl font-medium transition-colors">
+          <i data-lucide="receipt" class="w-5 h-5"></i>
+          <span>Transaksi</span>
+        </a>
+        <a href="#" class="flex items-center space-x-3 px-4 py-3 text-navy-200 hover:bg-navy-800 rounded-xl font-medium transition-colors">
+          <i data-lucide="percent" class="w-5 h-5"></i>
+          <span>Margin Harga</span>
+        </a>
+        <a href="#" class="flex items-center space-x-3 px-4 py-3 text-navy-200 hover:bg-navy-800 rounded-xl font-medium transition-colors">
+          <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+          <span>Sync Voucher</span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="absolute bottom-0 left-0 right-0 p-6 border-t border-navy-800">
+      <button id="adminLogout" class="flex items-center space-x-3 w-full px-4 py-3 text-red-300 hover:bg-red-900/30 rounded-xl transition-colors">
+        <i data-lucide="log-out" class="w-5 h-5"></i>
+        <span>Keluar</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="lg:ml-64">
+    
+    <!-- Topbar -->
+    <header class="sticky top-0 z-30 bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-4">
+        <button class="lg:hidden p-2 text-navy-600" id="mobileMenuBtn">
+          <i data-lucide="menu" class="w-6 h-6"></i>
+        </button>
+        <h1 class="text-lg font-semibold">Dashboard</h1>
+      </div>
+      <div class="flex items-center space-x-3">
+        <span class="text-sm text-gray-600 hidden sm:inline">Admin</span>
+        <div class="w-9 h-9 bg-primary-100 rounded-full flex items-center justify-center text-primary-700 font-medium">A</div>
+      </div>
+    </header>
+
+    <!-- Dashboard Content -->
+    <main class="p-4 md:p-6 space-y-6">
+      
+      <!-- Stats Grid -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4" id="statsGrid">
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+          <div class="flex items-center justify-between mb-2">
+            <i data-lucide="shopping-bag" class="w-5 h-5 text-blue-600"></i>
+            <span class="text-xs text-green-600 font-medium" id="statGrowth">+0%</span>
+          </div>
+          <p class="text-2xl font-bold" id="statTotalTrx">0</p>
+          <p class="text-xs text-gray-500">Total Transaksi</p>
+        </div>
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+          <div class="flex items-center justify-between mb-2">
+            <i data-lucide="circle-check" class="w-5 h-5 text-green-600"></i>
+          </div>
+          <p class="text-2xl font-bold" id="statSuccess">0</p>
+          <p class="text-xs text-gray-500">Berhasil</p>
+        </div>
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+          <div class="flex items-center justify-between mb-2">
+            <i data-lucide="wallet" class="w-5 h-5 text-purple-600"></i>
+          </div>
+          <p class="text-2xl font-bold" id="statRevenue">Rp0</p>
+          <p class="text-xs text-gray-500">Pendapatan Hari Ini</p>
+        </div>
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+          <div class="flex items-center justify-between mb-2">
+            <i data-lucide="users" class="w-5 h-5 text-orange-600"></i>
+          </div>
+          <p class="text-2xl font-bold" id="statUsers">0</p>
+          <p class="text-xs text-gray-500">Total User</p>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+        <h3 class="font-semibold mb-4">Aksi Cepat</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <button onclick="Admin.syncVouchers()" class="p-4 bg-primary-50 hover:bg-primary-100 rounded-xl text-center transition-colors">
+            <i data-lucide="refresh-cw" class="w-6 h-6 text-primary-600 mx-auto mb-2"></i>
+            <p class="text-sm font-medium">Sync Voucher</p>
+          </button>
+          <button onclick="Admin.recalculatePrices()" class="p-4 bg-green-50 hover:bg-green-100 rounded-xl text-center transition-colors">
+            <i data-lucide="calculator" class="w-6 h-6 text-green-600 mx-auto mb-2"></i>
+            <p class="text-sm font-medium">Recalculate Harga</p>
+          </button>
+          <button onclick="window.location.href='/admin/users.html'" class="p-4 bg-blue-50 hover:bg-blue-100 rounded-xl text-center transition-colors">
+            <i data-lucide="users" class="w-6 h-6 text-blue-600 mx-auto mb-2"></i>
+            <p class="text-sm font-medium">Kelola User</p>
+          </button>
+          <button onclick="window.location.href='/admin/transactions.html'" class="p-4 bg-purple-50 hover:bg-purple-100 rounded-xl text-center transition-colors">
+            <i data-lucide="receipt" class="w-6 h-6 text-purple-600 mx-auto mb-2"></i>
+            <p class="text-sm font-medium">Lihat Transaksi</p>
+          </button>
+        </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
+        <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+          <h3 class="font-semibold">Aktivitas Terbaru</h3>
+          <button class="text-sm text-primary-600 hover:text-primary-700">Lihat Semua</button>
+        </div>
+        <div id="recentActivity" class="divide-y divide-gray-100">
+          <div class="p-4 animate-pulse">
+            <div class="flex items-center space-x-4">
+              <div class="w-10 h-10 bg-gray-200 rounded-full"></div>
+              <div class="flex-1 space-y-2">
+                <div class="h-4 bg-gray-200 rounded w-3/4"></div>
+                <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Mobile Sidebar -->
+  <aside class="fixed left-0 top-0 h-full w-64 bg-navy-900 z-50 transform -translate-x-full transition-transform lg:hidden" id="mobileSidebar">
+    <!-- Same content as desktop sidebar -->
+  </aside>
+  <div class="fixed inset-0 bg-black/40 z-40 hidden" id="mobileOverlay"></div>
+
+  <script src="/assets/js/utils.js"></script>
+  <script src="/assets/js/app.js"></script>
+  <script src="/assets/js/admin.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      if (!Admin.requireAdminAuth()) return;
+      Admin.loadDashboard();
+      Admin.setupMobileSidebar();
+    });
+  </script>
+</body>
+</html>

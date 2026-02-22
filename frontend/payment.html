@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bayar - Vexa Cell</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: { 500: '#0ea5e9', 600: '#0284c7', 900: '#0c4a6e' },
+            navy: { 600: '#475569', 800: '#1e293b', 900: '#0f172a' }
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body class="bg-gray-50 text-navy-900 font-sans">
+
+  <!-- Header -->
+  <header class="bg-white border-b border-gray-100 px-4 py-3 sticky top-0 z-30">
+    <div class="max-w-lg mx-auto flex items-center justify-between">
+      <button onclick="history.back()" class="p-2 -ml-2 text-navy-600 hover:text-primary-600 transition-colors">
+        <i data-lucide="arrow-left" class="w-5 h-5"></i>
+      </button>
+      <h1 class="font-semibold text-navy-900">Pembayaran QRIS</h1>
+      <div class="w-9"></div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-lg mx-auto p-4 space-y-4">
+    
+    <!-- Order Summary -->
+    <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100" id="orderSummary">
+      <div class="flex items-center space-x-3 mb-4 pb-4 border-b border-gray-100">
+        <div class="w-12 h-12 bg-gradient-to-br from-primary-100 to-primary-200 rounded-xl flex items-center justify-center">
+          <i data-lucide="shopping-bag" class="w-6 h-6 text-primary-600" id="voucherIcon"></i>
+        </div>
+        <div class="flex-1">
+          <p class="font-medium text-navy-900" id="voucherName">Loading...</p>
+          <p class="text-sm text-gray-500" id="voucherDetail">-</p>
+        </div>
+      </div>
+      <div class="space-y-2 text-sm">
+        <div class="flex justify-between">
+          <span class="text-gray-600">Nomor Tujuan</span>
+          <span class="font-mono" id="targetNumber">-</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-600">Harga Voucher</span>
+          <span id="voucherPrice">-</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-600">Admin Fee</span>
+          <span id="adminFee">Rp0</span>
+        </div>
+        <div class="flex justify-between font-bold text-navy-900 pt-2 border-t">
+          <span>Total Bayar</span>
+          <span id="totalAmount" class="text-primary-600">-</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- QRIS Section -->
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 text-center" id="qrisSection">
+      
+      <!-- Loading State -->
+      <div id="qrisLoading" class="py-8">
+        <div class="w-16 h-16 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin mx-auto mb-4"></div>
+        <p class="text-gray-600">Menyiapkan QRIS...</p>
+      </div>
+
+      <!-- QR Code Display -->
+      <div id="qrisDisplay" class="hidden">
+        <p class="text-sm text-gray-600 mb-4">Scan QRIS dengan aplikasi pembayaran Anda</p>
+        <div class="qr-container mx-auto mb-4">
+          <img id="qrImage" src="" alt="QRIS Code" class="qr-image">
+        </div>
+        <p class="text-xs text-gray-500 mb-2">Atau salin string QRIS:</p>
+        <div class="flex items-center space-x-2 bg-gray-50 rounded-xl p-2 mb-4">
+          <input type="text" id="qrString" readonly class="flex-1 bg-transparent text-xs text-gray-700 px-2 focus:outline-none" value="">
+          <button onclick="Payment.copyQRString()" class="p-2 text-gray-400 hover:text-primary-600 transition-colors">
+            <i data-lucide="copy" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Countdown Timer -->
+      <div id="countdown" class="flex items-center justify-center space-x-2 text-sm text-orange-600 bg-orange-50 rounded-xl py-2 px-4">
+        <i data-lucide="clock" class="w-4 h-4"></i>
+        <span>Batas waktu: <span id="timer" class="font-bold">30:00</span></span>
+      </div>
+    </div>
+
+    <!-- Payment Status -->
+    <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100" id="statusSection">
+      <div class="flex items-center space-x-3" id="statusContent">
+        <div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
+          <i data-lucide="clock" class="w-5 h-5 text-yellow-600" id="statusIcon"></i>
+        </div>
+        <div>
+          <p class="font-medium text-navy-900" id="statusTitle">Menunggu Pembayaran</p>
+          <p class="text-sm text-gray-500" id="statusDesc">Silakan scan QRIS untuk melanjutkan</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="space-y-3" id="actionButtons">
+      <button onclick="Payment.checkStatus()" 
+              class="w-full py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-medium btn-hover transition-all flex items-center justify-center space-x-2">
+        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+        <span>Cek Status Pembayaran</span>
+      </button>
+      <button onclick="Payment.cancelTransaction()" 
+              class="w-full py-3 bg-gray-100 hover:bg-gray-200 text-navy-700 rounded-xl font-medium transition-all">
+        Batalkan Transaksi
+      </button>
+    </div>
+
+    <!-- Help Section -->
+    <div class="bg-blue-50 rounded-2xl p-4 border border-blue-100">
+      <div class="flex items-start space-x-3">
+        <i data-lucide="info" class="w-5 h-5 text-blue-600 mt-0.5"></i>
+        <div class="text-sm text-blue-800">
+          <p class="font-medium mb-1">Tips Pembayaran:</p>
+          <ul class="space-y-1 text-blue-700">
+            <li>• Buka aplikasi e-wallet/banking Anda</li>
+            <li>• Pilih menu Scan QRIS</li>
+            <li>• Arahkan kamera ke kode QR di atas</li>
+            <li>• Konfirmasi pembayaran sesuai nominal</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Success Modal (Hidden by default) -->
+  <div id="successModal" class="fixed inset-0 z-50 hidden">
+    <div class="modal-backdrop">
+      <div class="modal-content text-center p-8">
+        <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce-sm">
+          <i data-lucide="circle-check" class="w-10 h-10 text-green-600"></i>
+        </div>
+        <h2 class="text-xl font-bold text-navy-900 mb-2">Pembayaran Berhasil! 🎉</h2>
+        <p class="text-gray-600 text-sm mb-6">Voucher sedang diproses dan akan dikirim dalam beberapa saat</p>
+        
+        <div class="bg-gray-50 rounded-xl p-4 mb-6 text-left">
+          <div class="flex justify-between text-sm mb-2">
+            <span class="text-gray-600">ID Transaksi</span>
+            <span class="font-mono text-navy-900" id="successTrxId">-</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-600">Status</span>
+            <span class="status-badge success">Diproses</span>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <button onclick="Payment.viewReceipt()" 
+                  class="w-full py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-medium btn-hover transition-all">
+            Lihat Struk
+          </button>
+          <button onclick="window.location.href='/dashboard.html'" 
+                  class="w-full py-3 bg-gray-100 hover:bg-gray-200 text-navy-700 rounded-xl font-medium transition-all">
+            Kembali ke Dashboard
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Failed Modal (Hidden by default) -->
+  <div id="failedModal" class="fixed inset-0 z-50 hidden">
+    <div class="modal-backdrop">
+      <div class="modal-content text-center p-8">
+        <div class="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6 animate-shake">
+          <i data-lucide="circle-x" class="w-10 h-10 text-red-600"></i>
+        </div>
+        <h2 class="text-xl font-bold text-navy-900 mb-2">Pembayaran Gagal</h2>
+        <p class="text-gray-600 text-sm mb-6" id="failReason">Waktu pembayaran telah habis atau terjadi kesalahan</p>
+        
+        <div class="space-y-3">
+          <button onclick="Payment.retryPayment()" 
+                  class="w-full py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-medium btn-hover transition-all">
+            Coba Lagi
+          </button>
+          <button onclick="window.location.href='/'" 
+                  class="w-full py-3 bg-gray-100 hover:bg-gray-200 text-navy-700 rounded-xl font-medium transition-all">
+            Pilih Voucher Lain
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toastContainer" class="fixed top-20 right-4 z-50 space-y-2 max-w-sm"></div>
+
+  <script src="/assets/js/utils.js"></script>
+  <script src="/assets/js/app.js"></script>
+  <script src="/assets/js/payment.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      
+      // Auth check
+      if (!Auth.requireAuth()) return;
+      
+      // Initialize payment page
+      const urlParams = new URLSearchParams(window.location.search);
+      const transactionId = urlParams.get('id');
+      
+      if (!transactionId) {
+        Utils.showToast('error', 'Error', 'ID transaksi tidak ditemukan');
+        setTimeout(() => window.location.href = '/', 1500);
+        return;
+      }
+      
+      Payment.init(transactionId);
+    });
+  </script>
+</body>
+</html>

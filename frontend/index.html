@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vexa Cell - Beli Voucher Pulsa & Data Termurah</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              900: '#0c4a6e', // Navy blue
+            },
+            navy: {
+              50: '#f8fafc',
+              100: '#f1f5f9',
+              500: '#64748b',
+              800: '#1e293b',
+              900: '#0f172a',
+            }
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.3s ease-out',
+            'slide-up': 'slideUp 0.4s ease-out',
+            'scale-in': 'scaleIn 0.2s ease-out',
+            'bounce-sm': 'bounceSm 0.3s ease-in-out'
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' }
+            },
+            slideUp: {
+              '0%': { opacity: '0', transform: 'translateY(20px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' }
+            },
+            scaleIn: {
+              '0%': { opacity: '0', transform: 'scale(0.95)' },
+              '100%': { opacity: '1', transform: 'scale(1)' }
+            },
+            bounceSm: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-4px)' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body class="bg-gray-50 text-navy-900 font-sans antialiased">
+  
+  <!-- Navbar -->
+  <nav class="fixed top-0 w-full bg-white/95 backdrop-blur-sm border-b border-gray-100 z-50 transition-all duration-300" id="navbar">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <!-- Logo -->
+        <div class="flex items-center space-x-2">
+          <div class="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-700 rounded-lg flex items-center justify-center">
+            <i data-lucide="zap" class="w-5 h-5 text-white"></i>
+          </div>
+          <span class="text-xl font-bold bg-gradient-to-r from-primary-600 to-primary-900 bg-clip-text text-transparent">Vexa Cell</span>
+        </div>
+        
+        <!-- Desktop Menu -->
+        <div class="hidden md:flex items-center space-x-8">
+          <a href="/" class="text-primary-600 font-medium">Beranda</a>
+          <a href="#vouchers" class="text-navy-600 hover:text-primary-600 transition-colors">Voucher</a>
+          <a href="#history" class="text-navy-600 hover:text-primary-600 transition-colors">Riwayat</a>
+          <a href="#" class="text-navy-600 hover:text-primary-600 transition-colors">Bantuan</a>
+        </div>
+        
+        <!-- Auth Buttons -->
+        <div class="flex items-center space-x-3" id="authButtons">
+          <a href="/login.html" class="px-4 py-2 text-navy-600 hover:text-primary-600 font-medium transition-colors">Masuk</a>
+          <a href="/register.html" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-medium transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 active:scale-95">Daftar</a>
+        </div>
+        
+        <!-- User Menu (hidden by default) -->
+        <div class="hidden items-center space-x-4" id="userMenu">
+          <span class="text-sm text-navy-600" id="userName">User</span>
+          <button class="p-2 text-navy-400 hover:text-primary-600 transition-colors relative" id="notificationBtn">
+            <i data-lucide="bell" class="w-5 h-5"></i>
+            <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center hidden" id="notificationBadge">3</span>
+          </button>
+          <div class="relative">
+            <button class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center text-primary-700 font-medium hover:bg-primary-200 transition-colors" id="userDropdownBtn">
+              U
+            </button>
+            <div class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-2 hidden animate-fade-in z-50" id="userDropdown">
+              <a href="/dashboard.html" class="block px-4 py-2 text-sm text-navy-700 hover:bg-gray-50 transition-colors">Dashboard</a>
+              <a href="/history.html" class="block px-4 py-2 text-sm text-navy-700 hover:bg-gray-50 transition-colors">Riwayat</a>
+              <hr class="my-2 border-gray-100">
+              <button class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors" id="logoutBtn">Keluar</button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Mobile Menu Button -->
+        <button class="md:hidden p-2 text-navy-600" id="mobileMenuBtn">
+          <i data-lucide="menu" class="w-6 h-6"></i>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Mobile Menu -->
+    <div class="md:hidden hidden bg-white border-t border-gray-100 animate-slide-up" id="mobileMenu">
+      <div class="px-4 py-3 space-y-2">
+        <a href="/" class="block px-3 py-2 text-primary-600 font-medium rounded-lg bg-primary-50">Beranda</a>
+        <a href="#vouchers" class="block px-3 py-2 text-navy-600 hover:bg-gray-50 rounded-lg transition-colors">Voucher</a>
+        <a href="#history" class="block px-3 py-2 text-navy-600 hover:bg-gray-50 rounded-lg transition-colors">Riwayat</a>
+        <a href="#" class="block px-3 py-2 text-navy-600 hover:bg-gray-50 rounded-lg transition-colors">Bantuan</a>
+        <hr class="border-gray-100 my-2">
+        <a href="/login.html" class="block px-3 py-2 text-navy-600 hover:bg-gray-50 rounded-lg transition-colors">Masuk</a>
+        <a href="/register.html" class="block px-3 py-2 bg-primary-600 text-white rounded-lg text-center font-medium">Daftar</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="pt-20 pb-12">
+    
+    <!-- Hero Banner -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+      <div class="bg-gradient-to-r from-primary-600 via-primary-700 to-primary-900 rounded-2xl p-6 md:p-8 text-white shadow-xl relative overflow-hidden">
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml,...')] opacity-10"></div>
+        <div class="relative z-10">
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+            <div class="mb-4 md:mb-0">
+              <h1 class="text-2xl md:text-3xl font-bold mb-2">Selamat Datang di Vexa Cell! 👋</h1>
+              <p class="text-primary-100 text-sm md:text-base">Beli voucher pulsa, data, dan game dengan harga terbaik. Proses otomatis 24/7.</p>
+            </div>
+            <div class="flex space-x-3">
+              <button class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-xl text-sm font-medium transition-all backdrop-blur-sm">
+                <i data-lucide="gift" class="w-4 h-4 inline mr-1"></i>Promo
+              </button>
+              <button class="px-4 py-2 bg-white text-primary-700 hover:bg-primary-50 rounded-xl text-sm font-medium transition-all shadow-lg">
+                <i data-lucide="shopping-cart" class="w-4 h-4 inline mr-1"></i>Beli Sekarang
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- Decorative elements -->
+        <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+        <div class="absolute -left-10 -top-10 w-32 h-32 bg-primary-400/20 rounded-full blur-xl"></div>
+      </div>
+    </section>
+
+    <!-- Category Tabs -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
+      <div class="flex overflow-x-auto pb-2 space-x-2 scrollbar-hide" id="categoryTabs">
+        <button class="category-tab active px-4 py-2 bg-primary-600 text-white rounded-xl text-sm font-medium whitespace-nowrap transition-all" data-category="all">
+          Semua
+        </button>
+        <button class="category-tab px-4 py-2 bg-white text-navy-600 hover:bg-gray-50 rounded-xl text-sm font-medium whitespace-nowrap transition-all border border-gray-200" data-category="pulsa">
+          Pulsa
+        </button>
+        <button class="category-tab px-4 py-2 bg-white text-navy-600 hover:bg-gray-50 rounded-xl text-sm font-medium whitespace-nowrap transition-all border border-gray-200" data-category="data">
+          Paket Data
+        </button>
+        <button class="category-tab px-4 py-2 bg-white text-navy-600 hover:bg-gray-50 rounded-xl text-sm font-medium whitespace-nowrap transition-all border border-gray-200" data-category="pln">
+          Token PLN
+        </button>
+        <button class="category-tab px-4 py-2 bg-white text-navy-600 hover:bg-gray-50 rounded-xl text-sm font-medium whitespace-nowrap transition-all border border-gray-200" data-category="ewallet">
+          E-Wallet
+        </button>
+        <button class="category-tab px-4 py-2 bg-white text-navy-600 hover:bg-gray-50 rounded-xl text-sm font-medium whitespace-nowrap transition-all border border-gray-200" data-category="game">
+          Voucher Game
+        </button>
+      </div>
+    </section>
+
+    <!-- Search & Filter -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+        <div class="flex flex-col sm:flex-row gap-3">
+          <div class="relative flex-1">
+            <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+            <input type="text" id="voucherSearch" placeholder="Cari voucher, provider, nominal..." 
+                   class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-sm">
+          </div>
+          <select id="providerFilter" class="px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm min-w-[180px]">
+            <option value="">Semua Provider</option>
+            <!-- Populated by JS -->
+          </select>
+          <select id="sortFilter" class="px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm min-w-[150px]">
+            <option value="popular">Terpopuler</option>
+            <option value="price-asc">Harga Terendah</option>
+            <option value="price-desc">Harga Tertinggi</option>
+            <option value="name">Nama A-Z</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- Voucher Grid -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" id="vouchers">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-semibold text-navy-900">Daftar Voucher</h2>
+        <span class="text-sm text-gray-500" id="voucherCount">Loading...</span>
+      </div>
+      
+      <div id="voucherGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
+        <!-- Skeleton loaders -->
+        <div class="voucher-card-skeleton bg-white rounded-2xl p-4 shadow-sm border border-gray-100 animate-pulse" x="6">
+          <div class="w-12 h-12 bg-gray-200 rounded-xl mb-3"></div>
+          <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+          <div class="h-3 bg-gray-200 rounded w-1/2 mb-3"></div>
+          <div class="h-6 bg-gray-200 rounded w-full mb-2"></div>
+          <div class="h-8 bg-gray-200 rounded w-full"></div>
+        </div>
+        <!-- More skeletons... -->
+      </div>
+      
+      <!-- Empty State -->
+      <div id="emptyState" class="hidden text-center py-12">
+        <i data-lucide="search-x" class="w-12 h-12 text-gray-300 mx-auto mb-3"></i>
+        <p class="text-gray-500">Tidak ada voucher ditemukan</p>
+        <button class="mt-3 text-primary-600 hover:text-primary-700 text-sm font-medium">Reset Filter</button>
+      </div>
+      
+      <!-- Load More -->
+      <div class="text-center mt-6" id="loadMoreContainer">
+        <button id="loadMoreBtn" class="px-6 py-2.5 bg-white border border-gray-200 text-navy-600 rounded-xl text-sm font-medium hover:bg-gray-50 transition-all hover:shadow-md">
+          Muat Lebih Banyak
+        </button>
+      </div>
+    </section>
+
+    <!-- Popular Vouchers Section -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
+      <h2 class="text-lg font-semibold text-navy-900 mb-4">Voucher Populer</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" id="popularVouchers">
+        <!-- Populated by JS -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Toast Container -->
+  <div id="toastContainer" class="fixed top-20 right-4 z-50 space-y-2 max-w-sm"></div>
+
+  <!-- Modal Container -->
+  <div id="modalContainer" class="fixed inset-0 z-50 hidden"></div>
+
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="fixed inset-0 bg-black/30 backdrop-blur-sm z-40 hidden items-center justify-center">
+    <div class="bg-white rounded-2xl p-6 shadow-2xl text-center animate-scale-in">
+      <div class="w-12 h-12 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin mx-auto mb-4"></div>
+      <p class="text-navy-700 font-medium">Memproses...</p>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/assets/js/utils.js"></script>
+  <script src="/assets/js/app.js"></script>
+  <script>
+    // Initialize Lucide icons
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      
+      // Check auth status
+      App.initAuth();
+      
+      // Load vouchers
+      Vouchers.loadAll();
+      
+      // Setup event listeners
+      App.setupEventListeners();
+    });
+  </script>
+</body>
+</html>

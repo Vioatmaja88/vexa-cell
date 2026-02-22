@@ -1,0 +1,133 @@
+<!-- Navbar Component -->
+<nav class="fixed top-0 w-full bg-white/95 backdrop-blur-sm border-b border-gray-100 z-50 transition-all duration-300" id="navbar">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-16">
+      
+      <!-- Logo -->
+      <div class="flex items-center space-x-2">
+        <div class="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-700 rounded-lg flex items-center justify-center">
+          <i data-lucide="zap" class="w-5 h-5 text-white"></i>
+        </div>
+        <span class="text-xl font-bold bg-gradient-to-r from-primary-600 to-primary-900 bg-clip-text text-transparent">Vexa Cell</span>
+      </div>
+      
+      <!-- Desktop Menu -->
+      <div class="hidden md:flex items-center space-x-8">
+        <a href="/" class="text-primary-600 font-medium">Beranda</a>
+        <a href="/#vouchers" class="text-navy-600 hover:text-primary-600 transition-colors">Voucher</a>
+        <a href="/history.html" class="text-navy-600 hover:text-primary-600 transition-colors">Riwayat</a>
+        <a href="#" class="text-navy-600 hover:text-primary-600 transition-colors">Bantuan</a>
+      </div>
+      
+      <!-- Auth Buttons -->
+      <div class="flex items-center space-x-3" id="authButtons">
+        <a href="/login.html" class="px-4 py-2 text-navy-600 hover:text-primary-600 font-medium transition-colors">Masuk</a>
+        <a href="/register.html" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-medium transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 active:scale-95">Daftar</a>
+      </div>
+      
+      <!-- User Menu -->
+      <div class="hidden items-center space-x-4" id="userMenu">
+        <span class="text-sm text-navy-600" id="userName">User</span>
+        <button class="p-2 text-navy-400 hover:text-primary-600 transition-colors relative" id="notificationBtn">
+          <i data-lucide="bell" class="w-5 h-5"></i>
+          <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center hidden" id="notificationBadge">0</span>
+        </button>
+        <div class="relative">
+          <button class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center text-primary-700 font-medium hover:bg-primary-200 transition-colors" id="userDropdownBtn">
+            U
+          </button>
+          <div class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-2 hidden animate-fade-in z-50" id="userDropdown">
+            <a href="/dashboard.html" class="block px-4 py-2 text-sm text-navy-700 hover:bg-gray-50 transition-colors">Dashboard</a>
+            <a href="/history.html" class="block px-4 py-2 text-sm text-navy-700 hover:bg-gray-50 transition-colors">Riwayat</a>
+            <hr class="my-2 border-gray-100">
+            <button class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors" id="logoutBtn">Keluar</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Mobile Menu Button -->
+      <button class="md:hidden p-2 text-navy-600" id="mobileMenuBtn">
+        <i data-lucide="menu" class="w-6 h-6"></i>
+      </button>
+    </div>
+  </div>
+  
+  <!-- Mobile Menu -->
+  <div class="md:hidden hidden bg-white border-t border-gray-100 animate-slide-up" id="mobileMenu">
+    <div class="px-4 py-3 space-y-2">
+      <a href="/" class="block px-3 py-2 text-primary-600 font-medium rounded-lg bg-primary-50">Beranda</a>
+      <a href="/#vouchers" class="block px-3 py-2 text-navy-600 hover:bg-gray-50 rounded-lg transition-colors">Voucher</a>
+      <a href="/history.html" class="block px-3 py-2 text-navy-600 hover:bg-gray-50 rounded-lg transition-colors">Riwayat</a>
+      <a href="#" class="block px-3 py-2 text-navy-600 hover:bg-gray-50 rounded-lg transition-colors">Bantuan</a>
+      <hr class="border-gray-100 my-2">
+      <a href="/login.html" class="block px-3 py-2 text-navy-600 hover:bg-gray-50 rounded-lg transition-colors">Masuk</a>
+      <a href="/register.html" class="block px-3 py-2 bg-primary-600 text-white rounded-lg text-center font-medium">Daftar</a>
+    </div>
+  </div>
+</nav>
+
+<script>
+// Navbar initialization script
+(function() {
+  const mobileBtn = document.getElementById('mobileMenuBtn');
+  const mobileMenu = document.getElementById('mobileMenu');
+  const dropdownBtn = document.getElementById('userDropdownBtn');
+  const dropdown = document.getElementById('userDropdown');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const notificationBtn = document.getElementById('notificationBtn');
+
+  // Mobile menu toggle
+  mobileBtn?.addEventListener('click', () => {
+    mobileMenu?.classList.toggle('hidden');
+  });
+
+  // User dropdown toggle
+  dropdownBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    dropdown?.classList.toggle('hidden');
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (dropdown && !dropdown.contains(e.target) && e.target !== dropdownBtn) {
+      dropdown.classList.add('hidden');
+    }
+  });
+
+  // Logout
+  logoutBtn?.addEventListener('click', () => {
+    localStorage.removeItem('vexa_token');
+    localStorage.removeItem('vexa_user');
+    window.location.href = '/';
+  });
+
+  // Notifications
+  notificationBtn?.addEventListener('click', () => {
+    Utils.showToast('info', 'Notifikasi', 'Belum ada notifikasi baru');
+  });
+
+  // Update auth UI
+  function updateAuthUI() {
+    const token = localStorage.getItem('vexa_token');
+    const userStr = localStorage.getItem('vexa_user');
+    const authButtons = document.getElementById('authButtons');
+    const userMenu = document.getElementById('userMenu');
+    const userName = document.getElementById('userName');
+
+    if (token && userStr) {
+      const user = JSON.parse(userStr);
+      authButtons?.classList.add('hidden');
+      userMenu?.classList.remove('hidden');
+      userMenu?.classList.add('flex');
+      userName.textContent = user.fullName?.split(' ')[0] || 'User';
+      document.getElementById('userDropdownBtn').textContent = (user.fullName?.[0] || 'U').toUpperCase();
+    } else {
+      authButtons?.classList.remove('hidden');
+      userMenu?.classList.add('hidden');
+      userMenu?.classList.remove('flex');
+    }
+  }
+
+  updateAuthUI();
+})();
+</script>

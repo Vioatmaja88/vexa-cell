@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Login - Vexa Cell</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: { 500: '#0ea5e9', 600: '#0284c7', 900: '#0c4a6e' },
+            navy: { 600: '#475569', 800: '#1e293b', 900: '#0f172a' }
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body class="bg-gradient-to-br from-navy-900 via-primary-900 to-navy-900 min-h-screen flex items-center justify-center p-4">
+  
+  <!-- Admin Card -->
+  <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl p-8 animate-scale-in">
+    
+    <!-- Logo & Title -->
+    <div class="text-center mb-8">
+      <div class="w-16 h-16 bg-gradient-to-br from-primary-500 to-primary-700 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+        <i data-lucide="shield-check" class="w-8 h-8 text-white"></i>
+      </div>
+      <h1 class="text-2xl font-bold text-navy-900">Admin Panel 🔐</h1>
+      <p class="text-gray-500 text-sm mt-1">Masuk untuk mengelola sistem</p>
+    </div>
+
+    <!-- Login Form -->
+    <form id="adminLoginForm" class="space-y-5">
+      
+      <div>
+        <label class="block text-sm font-medium text-navy-700 mb-2">Email Admin</label>
+        <div class="relative">
+          <i data-lucide="user-check" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+          <input type="email" id="email" required 
+                 class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
+                 placeholder="admin@vexacell.com">
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-navy-700 mb-2">Password</label>
+        <div class="relative">
+          <i data-lucide="lock" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+          <input type="password" id="password" required
+                 class="w-full pl-10 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
+                 placeholder="••••••••">
+          <button type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600" id="togglePassword">
+            <i data-lucide="eye-off" class="w-5 h-5" id="toggleIcon"></i>
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" id="loginBtn" 
+              class="w-full py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-medium btn-hover transition-all flex items-center justify-center space-x-2">
+        <span>Masuk sebagai Admin</span>
+        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+      </button>
+
+      <button type="button" id="loginBtnLoading" 
+              class="w-full py-3 bg-primary-600 text-white rounded-xl font-medium hidden items-center justify-center space-x-2">
+        <div class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+        <span>Memverifikasi...</span>
+      </button>
+    </form>
+
+    <p class="text-center text-xs text-gray-500 mt-6">
+      <a href="/" class="text-primary-600 hover:underline">← Kembali ke Website</a>
+    </p>
+  </div>
+
+  <div id="toastContainer" class="fixed top-4 right-4 z-50 space-y-2 max-w-sm"></div>
+
+  <script src="/assets/js/utils.js"></script>
+  <script src="/assets/js/admin.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      Admin.initLogin();
+    });
+  </script>
+</body>
+</html>

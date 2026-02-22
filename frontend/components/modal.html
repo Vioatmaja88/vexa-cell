@@ -1,0 +1,72 @@
+<!-- Modal Container (Include in main layout) -->
+<div id="modalContainer" class="fixed inset-0 z-50 hidden"></div>
+
+<!-- Modal Template (for reference) -->
+<!-- 
+<div class="modal-backdrop">
+  <div class="modal-content">
+    <div class="p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="font-bold text-lg">Judul Modal</h3>
+        <button onclick="App.hideModal()" class="p-2 text-gray-400 hover:text-gray-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <p>Isi modal...</p>
+    </div>
+  </div>
+</div>
+-->
+
+<script>
+// Modal Component Script
+const ModalComponent = {
+  show(content, options = {}) {
+    const container = document.getElementById('modalContainer');
+    if (!container) return;
+
+    const { onClose, showClose = true, closeOnBackdrop = true } = options;
+
+    container.innerHTML = `
+      <div class="modal-backdrop" ${closeOnBackdrop ? 'onclick="if(event.target===this) ModalComponent.hide()"' : ''}>
+        <div class="modal-content relative">
+          ${showClose ? `
+          <button onclick="ModalComponent.hide()" class="absolute top-4 right-4 p-1 text-gray-400 hover:text-gray-600 transition-colors z-10">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>` : ''}
+          ${content}
+        </div>
+      </div>
+    `;
+
+    container.classList.remove('hidden');
+    
+    if (window.lucide) lucide.createIcons();
+
+    // Store onClose callback
+    container.onClose = onClose;
+
+    // Escape key to close
+    const escHandler = (e) => {
+      if (e.key === 'Escape') {
+        this.hide();
+        document.removeEventListener('keydown', escHandler);
+      }
+    };
+    document.addEventListener('keydown', escHandler);
+  },
+
+  hide() {
+    const container = document.getElementById('modalContainer');
+    if (!container) return;
+
+    const onClose = container.onClose;
+    container.classList.add('hidden');
+    container.innerHTML = '';
+    
+    if (onClose) onClose();
+  }
+};
+
+window.ModalComponent = ModalComponent;
+</script>

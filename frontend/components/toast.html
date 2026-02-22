@@ -1,0 +1,64 @@
+<!-- Toast Container (Include in main layout) -->
+<div id="toastContainer" class="fixed top-20 right-4 z-50 space-y-2 max-w-sm"></div>
+
+<!-- Toast Template (for reference) -->
+<!-- 
+<div class="toast success">
+  <i data-lucide="check-circle" class="toast-icon text-green-500"></i>
+  <div class="toast-content">
+    <div class="toast-title">Berhasil</div>
+    <div class="toast-message">Pesan sukses</div>
+  </div>
+  <button class="toast-close">
+    <i data-lucide="x" class="w-4 h-4"></i>
+  </button>
+</div>
+-->
+
+<script>
+// Toast Component Script
+const ToastComponent = {
+  show(type, title, message, duration = 4000) {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+
+    const icons = {
+      success: 'check-circle',
+      error: 'x-circle',
+      warning: 'alert-circle',
+      info: 'info',
+      loading: 'loader'
+    };
+
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `
+      <i data-lucide="${icons[type] || 'info'}" class="toast-icon"></i>
+      <div class="toast-content">
+        <div class="toast-title">${title}</div>
+        <div class="toast-message">${message}</div>
+      </div>
+      ${type !== 'loading' ? `
+      <button class="toast-close" onclick="this.closest('.toast').remove()">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>` : ''}
+    `;
+
+    container.appendChild(toast);
+    
+    if (window.lucide) lucide.createIcons({ root: toast });
+
+    if (duration && type !== 'loading') {
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(100%)';
+        setTimeout(() => toast.remove(), 300);
+      }, duration);
+    }
+
+    return toast;
+  }
+};
+
+window.ToastComponent = ToastComponent;
+</script>

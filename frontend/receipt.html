@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Struk Transaksi - Vexa Cell</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: { 500: '#0ea5e9', 600: '#0284c7', 900: '#0c4a6e' },
+            navy: { 600: '#475569', 800: '#1e293b', 900: '#0f172a' }
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.3s ease-out',
+            'slide-up': 'slideUp 0.4s ease-out',
+            'scale-in': 'scaleIn 0.2s ease-out'
+          },
+          keyframes: {
+            fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+            slideUp: { '0%': { opacity: '0', transform: 'translateY(20px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+            scaleIn: { '0%': { opacity: '0', transform: 'scale(0.95)' }, '100%': { opacity: '1', transform: 'scale(1)' } }
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="/assets/css/style.css">
+  
+  <!-- Print Styles -->
+  <style>
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #receiptContent, #receiptContent * {
+        visibility: visible;
+      }
+      #receiptContent {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 20px;
+        box-shadow: none;
+        border: none;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .print-only {
+        display: block !important;
+      }
+    }
+    .print-only {
+      display: none;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-navy-900 font-sans min-h-screen">
+
+  <!-- Header (No Print) -->
+  <header class="bg-white border-b border-gray-100 px-4 py-3 sticky top-0 z-30 no-print">
+    <div class="max-w-lg mx-auto flex items-center justify-between">
+      <button onclick="history.back()" class="p-2 -ml-2 text-navy-600 hover:text-primary-600 transition-colors">
+        <i data-lucide="arrow-left" class="w-5 h-5"></i>
+      </button>
+      <h1 class="font-semibold text-navy-900">Struk Transaksi</h1>
+      <button onclick="Receipt.downloadPDF()" class="p-2 text-primary-600 hover:text-primary-700 transition-colors" title="Download">
+        <i data-lucide="download" class="w-5 h-5"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-lg mx-auto p-4 md:p-6">
+    
+    <!-- Loading State -->
+    <div id="loadingState" class="text-center py-16">
+      <div class="w-16 h-16 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin mx-auto mb-4"></div>
+      <p class="text-gray-600">Memuat struk...</p>
+    </div>
+
+    <!-- Error State -->
+    <div id="errorState" class="hidden text-center py-16">
+      <div class="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <i data-lucide="alert-circle" class="w-10 h-10 text-red-600"></i>
+      </div>
+      <h3 class="font-bold text-navy-900 mb-2">Gagal Memuat Struk</h3>
+      <p class="text-gray-600 text-sm mb-4" id="errorMessage">Transaksi tidak ditemukan</p>
+      <button onclick="window.location.href='/history.html'" 
+              class="px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-xl text-sm font-medium btn-hover transition-all">
+        Kembali ke Riwayat
+      </button>
+    </div>
+
+    <!-- Receipt Content -->
+    <div id="receiptContent" class="hidden animate-scale-in">
+      
+      <!-- Receipt Card -->
+      <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+        
+        <!-- Receipt Header -->
+        <div class="bg-gradient-to-r from-primary-600 via-primary-700 to-primary-900 p-6 text-white text-center relative overflow-hidden">
+          <div class="absolute inset-0 bg-[url('data:image/svg+xml,...')] opacity-10"></div>
+          <div class="relative z-10">
+            <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3 backdrop-blur-sm">
+              <i data-lucide="receipt" class="w-8 h-8 text-white"></i>
+            </div>
+            <h2 class="text-xl font-bold mb-1">VEXA CELL</h2>
+            <p class="text-primary-100 text-sm">Bukti Transaksi</p>
+          </div>
+          <!-- Decorative -->
+          <div class="absolute -right-10 -top-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+          <div class="absolute -left-10 -bottom-10 w-24 h-24 bg-primary-400/20 rounded-full blur-xl"></div>
+        </div>
+
+        <!-- Receipt Body -->
+        <div class="p-6">
+          
+          <!-- Transaction ID -->
+          <div class="bg-gray-50 rounded-xl p-4 mb-6 text-center">
+            <p class="text-xs text-gray-500 mb-1">ID Transaksi</p>
+            <p class="font-mono text-sm font-medium text-navy-900" id="receiptTrxId">-</p>
+            <p class="text-xs text-gray-400 mt-1" id="receiptDate">-</p>
+          </div>
+
+          <!-- Status Badge -->
+          <div class="text-center mb-6">
+            <span id="receiptStatus" class="status-badge success text-sm px-4 py-1.5">
+              BERHASIL
+            </span>
+          </div>
+
+          <!-- Voucher Info -->
+          <div class="bg-gradient-to-br from-primary-50 to-blue-50 rounded-xl p-4 mb-6 border border-primary-100">
+            <div class="flex items-center space-x-4 mb-4">
+              <div class="w-14 h-14 bg-white rounded-xl flex items-center justify-center shadow-sm">
+                <i data-lucide="package" class="w-7 h-7 text-primary-600" id="voucherIcon"></i>
+              </div>
+              <div class="flex-1">
+                <h3 class="font-bold text-navy-900" id="voucherName">-</h3>
+                <p class="text-sm text-gray-600" id="voucherProvider">-</p>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-3 pt-4 border-t border-primary-100">
+              <div>
+                <p class="text-xs text-gray-500 mb-1">Nominal</p>
+                <p class="font-semibold text-navy-900" id="voucherNominal">-</p>
+              </div>
+              <div>
+                <p class="text-xs text-gray-500 mb-1">Kategori</p>
+                <p class="font-semibold text-navy-900" id="voucherCategory">-</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Target Number -->
+          <div class="mb-6">
+            <p class="text-xs text-gray-500 mb-2">Nomor Tujuan</p>
+            <div class="bg-gray-50 rounded-xl px-4 py-3 flex items-center justify-between">
+              <p class="font-mono text-lg font-medium text-navy-900" id="targetNumber">-</p>
+              <button onclick="Receipt.copyNumber()" class="p-2 text-gray-400 hover:text-primary-600 transition-colors" title="Salin Nomor">
+                <i data-lucide="copy" class="w-5 h-5"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Serial Number (if available) -->
+          <div id="serialNumberSection" class="hidden mb-6">
+            <p class="text-xs text-gray-500 mb-2">Serial Number / Kode Voucher</p>
+            <div class="bg-green-50 rounded-xl px-4 py-3 border border-green-200">
+              <p class="font-mono text-sm text-green-800 break-all" id="serialNumber">-</p>
+            </div>
+            <p class="text-xs text-green-600 mt-2 flex items-center">
+              <i data-lucide="check-circle" class="w-3 h-3 mr-1"></i>
+              Voucher telah dikirim ke nomor Anda
+            </p>
+          </div>
+
+          <!-- Price Breakdown -->
+          <div class="bg-gray-50 rounded-xl p-4 mb-6">
+            <h4 class="font-medium text-navy-900 mb-3 text-sm">Rincian Harga</h4>
+            <div class="space-y-2 text-sm">
+              <div class="flex justify-between">
+                <span class="text-gray-600">Harga Voucher</span>
+                <span id="priceVoucher">Rp0</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">Admin Fee</span>
+                <span id="priceAdmin">Rp0</span>
+              </div>
+              <div class="flex justify-between text-green-600">
+                <span class="flex items-center">
+                  <i data-lucide="percent" class="w-3 h-3 mr-1"></i>
+                  Diskon
+                </span>
+                <span id="priceDiscount">-Rp0</span>
+              </div>
+              <div class="flex justify-between font-bold text-navy-900 text-base pt-2 border-t border-gray-200">
+                <span>Total Bayar</span>
+                <span id="priceTotal" class="text-primary-600">Rp0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Payment Method -->
+          <div class="mb-6">
+            <p class="text-xs text-gray-500 mb-2">Metode Pembayaran</p>
+            <div class="flex items-center space-x-3 bg-gray-50 rounded-xl px-4 py-3">
+              <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center border border-gray-200">
+                <i data-lucide="qr-code" class="w-5 h-5 text-navy-600"></i>
+              </div>
+              <div>
+                <p class="font-medium text-navy-900 text-sm">QRIS</p>
+                <p class="text-xs text-gray-500">Pakasir</p>
+              </div>
+              <span class="ml-auto status-badge success">Lunas</span>
+            </div>
+          </div>
+
+          <!-- Customer Info -->
+          <div class="border-t border-gray-100 pt-4 mb-6">
+            <div class="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <p class="text-xs text-gray-500 mb-1">Email</p>
+                <p class="font-medium text-navy-900 truncate" id="customerEmail">-</p>
+              </div>
+              <div>
+                <p class="text-xs text-gray-500 mb-1">Waktu Transaksi</p>
+                <p class="font-medium text-navy-900" id="transactionTime">-</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Receipt Number -->
+          <div class="text-center pt-4 border-t border-gray-100">
+            <p class="text-xs text-gray-400">No. Struk: <span class="font-mono text-gray-600" id="receiptNumber">-</span></p>
+          </div>
+
+        </div>
+
+        <!-- Receipt Footer -->
+        <div class="bg-gray-50 px-6 py-4 border-t border-gray-100 text-center">
+          <p class="text-sm text-gray-600 mb-2">Terima kasih telah berbelanja di Vexa Cell</p>
+          <p class="text-xs text-gray-400">Simpan struk ini sebagai bukti transaksi yang sah</p>
+        </div>
+      </div>
+
+      <!-- Action Buttons (No Print) -->
+      <div class="space-y-3 mt-6 no-print">
+        <button onclick="Receipt.print()" 
+                class="w-full py-3.5 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-medium btn-hover transition-all flex items-center justify-center space-x-2">
+          <i data-lucide="printer" class="w-5 h-5"></i>
+          <span>Cetak Struk</span>
+        </button>
+        
+        <div class="grid grid-cols-2 gap-3">
+          <button onclick="Receipt.downloadPDF()" 
+                  class="py-3.5 bg-white border border-gray-200 hover:bg-gray-50 text-navy-700 rounded-xl font-medium transition-all flex items-center justify-center space-x-2">
+            <i data-lucide="download" class="w-5 h-5"></i>
+            <span>Download PDF</span>
+          </button>
+          <button onclick="Receipt.share()" 
+                  class="py-3.5 bg-white border border-gray-200 hover:bg-gray-50 text-navy-700 rounded-xl font-medium transition-all flex items-center justify-center space-x-2">
+            <i data-lucide="share-2" class="w-5 h-5"></i>
+            <span>Bagikan</span>
+          </button>
+        </div>
+
+        <button onclick="window.location.href='/history.html'" 
+                class="w-full py-3.5 bg-gray-100 hover:bg-gray-200 text-navy-700 rounded-xl font-medium transition-all">
+          Kembali ke Riwayat
+        </button>
+      </div>
+
+      <!-- Help Section (No Print) -->
+      <div class="bg-blue-50 rounded-2xl p-4 border border-blue-100 mt-6 no-print">
+        <div class="flex items-start space-x-3">
+          <i data-lucide="info" class="w-5 h-5 text-blue-600 mt-0.5"></i>
+          <div class="text-sm text-blue-800">
+            <p class="font-medium mb-1">Butuh Bantuan?</p>
+            <p class="text-blue-700">Jika ada masalah dengan transaksi Anda, hubungi support kami dengan menyertakan ID transaksi.</p>
+            <p class="text-blue-600 font-medium mt-2">📧 support@vexacell.com</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Toast Container -->
+  <div id="toastContainer" class="fixed top-20 right-4 z-50 space-y-2 max-w-sm"></div>
+
+  <script src="/assets/js/utils.js"></script>
+  <script src="/assets/js/app.js"></script>
+  <script src="/assets/js/receipt.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      if (!Auth.requireAuth()) return;
+      Receipt.init();
+    });
+  </script>
+</body>
+</html>
